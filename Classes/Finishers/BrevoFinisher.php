@@ -32,20 +32,28 @@ class BrevoFinisher extends AbstractFinisher implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    /** @var Configuration */
-    protected Configuration $extensionConfiguration;
+    protected ?Configuration $extensionConfiguration = null;
 
     /** @var EventDispatcherInterface */
     protected $eventDispatcher;
 
     public function __construct(string $finisherIdentifier = '')
     {
-        $this->extensionConfiguration = new Configuration();
+        try {
+            $this->extensionConfiguration = new Configuration();
+        } catch (\RuntimeException $e) {
+            $this->logger?->error('Brevo finisher skipped: ' . $e->getMessage());
+        }
         $this->eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
     }
 
     protected function executeInternal(): void
     {
+        if ($this->extensionConfiguration === null) {
+            $this->setFinisherSubscribedVariable(0);
+            return;
+        }
+
         if (!$this->newsletterSubscriptionIsEnabled()) {
             $this->setFinisherSubscribedVariable(0);
             return;
