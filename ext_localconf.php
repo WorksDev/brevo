@@ -29,5 +29,25 @@ call_user_func(
                 ],
             ];
         }
+
+        if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('form')) {
+            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup('
+module.tx_form {
+    settings {
+        yamlConfigurations {
+            1483353712 = EXT:brevo/Configuration/Yaml/FormSetup.yaml
+        }
+    }
+}
+
+plugin.tx_form {
+    settings {
+        yamlConfigurations {
+            1483353712 = EXT:brevo/Configuration/Yaml/FormSetup.yaml
+        }
+    }
+}
+');
+        }
     }
 );
